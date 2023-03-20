@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Automated Trading Bot</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav li {
+      margin-right: 10px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    nav a:hover {
+      background-color: #fff;
+      color: #333;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Automated Trading Bot</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="chart">
+      <h2>Bitcoin Chart</h2>
+      <canvas id="bitcoin-chart"></canvas>
+    </section>
+  </main>
+  <script>
+    const bitcoinChart = document.getElementById('bitcoin-chart').getContext('2d');
+
+    const chartData = {
+      labels: [],
+      datasets: [
+        {
+          label: 'Bitcoin Price',
+          data: [],
+          borderColor: '#36a2eb',
+          fill: false,
+        }
+      ]
+    };
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        xAxes: [{
+          type: 'time',
+          time: {
+            unit: 'day'
+          }
+        }]
+      }
+    };
+
+    const bitcoinAPI = 'https://api.coindesk.com/v1/bpi/historical/close.json?start=2022-01-01&end=2022-03-20';
+
+    fetch(bitcoinAPI)
+      .then(response => response.json())
+      .then(data => {
+        for (let date in data.bpi) {
+          chartData.labels.push(date);
+          chartData.datasets[0].data.push(data.bpi[date]);
+        }
+
+        new Chart(bitcoinChart, {
+          type: 'line',
+          data: chartData,
+          options: chartOptions
+        });
+      });
+  </script>
+</body>
+</html>
