@@ -1,110 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Automated Trading Bot</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-    }
-    nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-    }
-    nav li {
-      margin-right: 10px;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    nav a:hover {
-      background-color: #fff;
-      color: #333;
-    }
-    main {
-      padding: 20px;
-    }
-    section {
-      margin-bottom: 20px;
-    }
-    h2 {
-      margin-top: 0;
-    }
-  </style>
+	<title>Trading Bot Chart</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Automated Trading Bot</h1>
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">About</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <section id="chart">
-      <h2>Bitcoin Chart</h2>
-      <canvas id="bitcoin-chart"></canvas>
-    </section>
-  </main>
-  <script>
-    const bitcoinChart = document.getElementById('bitcoin-chart').getContext('2d');
+	<h1>Trading Bot Chart</h1>
+	<canvas id="chart"></canvas>
+	<script>
+		// Sample data for the chart
+		var data = {
+			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+			datasets: [{
+				label: "BTC Price",
+				data: [10000, 11000, 12000, 10500, 9000, 9500, 10000],
+				borderColor: "rgba(255, 99, 132, 1)",
+				fill: false
+			}]
+		};
 
-    const chartData = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Bitcoin Price',
-          data: [],
-          borderColor: '#36a2eb',
-          fill: false,
-        }
-      ]
-    };
+		// Options for the chart
+		var options = {
+			responsive: true,
+			title: {
+				display: true,
+				text: "BTC Price Chart"
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: "Month"
+					}
+				}],
+				yAxes: [{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: "Price (USD)"
+					}
+				}]
+			}
+		};
 
-    const chartOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        xAxes: [{
-          type: 'time',
-          time: {
-            unit: 'day'
-          }
-        }]
-      }
-    };
+		// Get the canvas element and initialize the chart
+		var ctx = document.getElementById("chart").getContext("2d");
+		var chart = new Chart(ctx, {
+			type: "line",
+			data: data,
+			options: options
+		});
 
-    const bitcoinAPI = 'https://api.coindesk.com/v1/bpi/historical/close.json?start=2022-01-01&end=2022-03-20';
+		// Sample buy and sell points for the chart
+		var buyPoints = [false, true, false, true, false, false, true];
+		var sellPoints = [false, false, true, false, true, false, false];
 
-    fetch(bitcoinAPI)
-      .then(response => response.json())
-      .then(data => {
-        for (let date in data.bpi) {
-          chartData.labels.push(date);
-          chartData.datasets[0].data.push(data.bpi[date]);
-        }
+		// Display the buy and sell points on the chart
+		for (var i = 0; i < data.labels.length; i++) {
+			if (buyPoints[i]) {
+				chart.config.data.datasets[0].pointBackgroundColor[i] = "green";
+			}
+			if (sellPoints[i]) {
+				chart.config.data.datasets[0].pointBackgroundColor[i] = "red";
+			}
+		}
 
-        new Chart(bitcoinChart, {
-          type: 'line',
-          data: chartData,
-          options: chartOptions
-        });
-      });
-  </script>
+		// Update the chart with the new data
+		chart.update();
+	</script>
 </body>
 </html>
